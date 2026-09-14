@@ -1,32 +1,32 @@
-# Life OS — Student Dashboard
+# ORION — AI Command Center
 
-A small, browser-first productivity dashboard built for students who want one place for daily tasks and focused study sessions.
+ORION is a privacy-first, AI-ready command center built as a learning project. It turns the original Life OS student dashboard into a futuristic workspace for missions, focus sessions, public-source research and future AI integrations.
 
-## Features
+## Current build
+- Command-center UI with responsive layout
+- Local task/mission board
+- 25-minute focus engine with study tracking
+- Local browser persistence
+- AI console with safe local demo responses
+- Public-intelligence area designed around visible sources
+- System page showing integration status
+- Provider-neutral AI adapter contract
 
-- Add, complete, and delete daily tasks
-- Save tasks and progress in browser local storage
-- 25-minute focus timer
-- Study-minute counter
-- Responsive layout for phones and laptops
-- No backend or account required
+## AI architecture
+The browser UI is deliberately separated from model credentials. A future backend can implement the adapter in `docs/orion.md` and call an approved model API without exposing an API key in client-side code.
 
-## Run locally
-
-Open `index.html` in a modern browser. The app is intentionally dependency-free.
+## Run
+Open `index.html` in a modern browser. No build step is required for the current prototype.
 
 ## Roadmap
+1. Connect a secure server-side AI provider.
+2. Add public web-search connectors with source citations.
+3. Add a notes/knowledge store.
+4. Add GitHub project intelligence.
+5. Add tests and continuous integration.
+6. Add optional model selection when supported by the backend.
 
-- [ ] Weekly study summary
-- [ ] Habit checklist
-- [ ] Export/import local data
-- [ ] Keyboard shortcuts
-- [ ] Optional dark mode
+## Safety boundary
+ORION is not a covert-surveillance tool. It should not be used to track people, access private accounts, bypass authentication, or collect personal data without permission.
 
-## Why this project?
-
-Life OS is a learning project for practicing HTML, CSS, JavaScript, browser storage, UI design, and incremental Git workflows.
-
-## License
-
-MIT
+MIT License.
