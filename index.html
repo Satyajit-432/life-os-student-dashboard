@@ -20,7 +20,7 @@
     <section class="stats" aria-label="Progress summary">
       <article><span>Study minutes</span><strong id="studyMinutes">0</strong></article>
       <article><span>Tasks done</span><strong id="tasksDone">0</strong></article>
-      <article><span>Habit streak</span><strong id="habitStreak">0</strong></article>
+      <article><span>Habits done</span><strong id="habitsDone">0</strong></article>
     </section>
 
     <section class="grid">
@@ -41,6 +41,20 @@
           <button id="resetTimer" class="secondary">Reset</button>
         </div>
         <p class="muted small">Finishing a focus session adds 25 minutes to your study total.</p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading"><h2>Daily habits</h2><span class="pill">Keep it simple</span></div>
+        <div id="habitList" class="habit-list"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading"><h2>Your data</h2></div>
+        <p class="muted small">Everything stays in this browser. Export a backup before clearing site data.</p>
+        <div class="timer-actions">
+          <button id="exportData">Export JSON</button>
+          <label class="file-button secondary"><input id="importData" type="file" accept="application/json">Import JSON</label>
+        </div>
       </article>
     </section>
   </main>

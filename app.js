@@ -1,4 +1,7 @@
-const state = JSON.parse(localStorage.getItem('lifeOS') || '{"tasks":[],"studyMinutes":0,"habitStreak":0}');
+const defaultHabits = ['Review notes', 'Drink water', 'Practice coding'];
+const saved = JSON.parse(localStorage.getItem('lifeOS') || 'null');
+const state = saved || { tasks: [], studyMinutes: 0, habits: defaultHabits.map(text => ({ text, done: false })) };
+state.habits = Array.isArray(state.habits) ? state.habits : defaultHabits.map(text => ({ text, done: false }));
 let seconds = 25 * 60;
 let timerId = null;
 
@@ -22,11 +25,25 @@ function renderTasks() {
   });
 }
 
+function renderHabits() {
+  const list = $('habitList');
+  list.innerHTML = '';
+  state.habits.forEach((habit, index) => {
+    const row = document.createElement('label');
+    row.className = 'habit';
+    row.innerHTML = `<input type="checkbox" ${habit.done ? 'checked' : ''}><span></span>`;
+    row.querySelector('span').textContent = habit.text;
+    row.querySelector('input').addEventListener('change', () => { state.habits[index].done = !state.habits[index].done; save(); render(); });
+    list.appendChild(row);
+  });
+}
+
 function render() {
   renderTasks();
+  renderHabits();
   $('studyMinutes').textContent = state.studyMinutes;
   $('tasksDone').textContent = state.tasks.filter(t => t.done).length;
-  $('habitStreak').textContent = state.habitStreak;
+  $('habitsDone').textContent = state.habits.filter(h => h.done).length;
 }
 
 function updateClock() {
@@ -82,6 +99,43 @@ $('resetTimer').addEventListener('click', () => {
   seconds = 25 * 60;
   $('startTimer').textContent = 'Start';
   showTimer();
+});
+
+$('exportData').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'life-os-backup.json';
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
+$('importData').addEventListener('change', async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const imported = JSON.parse(await file.text());
+    if (!Array.isArray(imported.tasks) || !Array.isArray(imported.habits)) throw new Error('Invalid backup');
+    state.tasks = imported.tasks;
+    state.habits = imported.habits;
+    state.studyMinutes = Number(imported.studyMinutes) || 0;
+    save();
+    render();
+  } catch {
+    alert('That file is not a valid Life OS backup.');
+  }
+  event.target.value = '';
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    event.preventDefault();
+    $('taskInput').focus();
+  }
+  if (event.key.toLowerCase() === 'r' && document.activeElement.tagName !== 'INPUT') {
+    $('resetTimer').click();
+  }
 });
 
 updateClock();

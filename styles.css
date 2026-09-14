@@ -22,13 +22,17 @@ h2 { margin-bottom: 0; font-size: 20px; }
 .inline-form { display: flex; gap: 8px; }
 input { width: 100%; border: 1px solid #ccd2da; border-radius: 10px; padding: 11px 12px; outline: none; }
 input:focus { border-color: #667085; }
-button { border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; background: #18202a; color: white; }
-button.secondary, .panel-heading button { background: #edf0f3; color: #27313d; }
+button, .file-button { border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; background: #18202a; color: white; }
+button.secondary, .panel-heading button, .file-button.secondary { background: #edf0f3; color: #27313d; }
 .task-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 8px; }
 .task { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid #e5e8ec; border-radius: 10px; }
 .task.done span { text-decoration: line-through; color: #8993a1; }
 .task button { margin-left: auto; padding: 6px 9px; background: transparent; color: #687383; }
 .pill { background: #f0f2f5; border-radius: 999px; padding: 6px 9px; font-size: 12px; }
 .timer { text-align: center; font-size: clamp(52px, 10vw, 88px); font-variant-numeric: tabular-nums; font-weight: 750; padding: 22px 0; }
-.timer-actions { display: flex; gap: 8px; justify-content: center; }
+.timer-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.habit-list { display: grid; gap: 9px; }
+.habit { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #e5e8ec; border-radius: 10px; }
+.habit input { width: auto; }
+.file-button input { display: none; }
 @media (max-width: 720px) { .hero, .grid { grid-template-columns: 1fr; display: grid; } .date-card { min-width: 0; } .stats { grid-template-columns: 1fr; } }
