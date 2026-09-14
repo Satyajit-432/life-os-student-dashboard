@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life OS — Student Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">LIFE OS</p>
+        <h1>Student Dashboard</h1>
+        <p class="muted">Plan your day, track study time, and keep small promises to yourself.</p>
+      </div>
+      <div class="date-card"><span id="today">Today</span><strong id="clock">--:--</strong></div>
+    </header>
+
+    <section class="stats" aria-label="Progress summary">
+      <article><span>Study minutes</span><strong id="studyMinutes">0</strong></article>
+      <article><span>Tasks done</span><strong id="tasksDone">0</strong></article>
+      <article><span>Habit streak</span><strong id="habitStreak">0</strong></article>
+    </section>
+
+    <section class="grid">
+      <article class="panel">
+        <div class="panel-heading"><h2>Today's tasks</h2><button id="clearDone">Clear done</button></div>
+        <form id="taskForm" class="inline-form">
+          <input id="taskInput" placeholder="Add a task" maxlength="80" required>
+          <button type="submit">Add</button>
+        </form>
+        <ul id="taskList" class="task-list"></ul>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading"><h2>Quick study timer</h2><span class="pill">25 min focus</span></div>
+        <div class="timer" id="timer">25:00</div>
+        <div class="timer-actions">
+          <button id="startTimer">Start</button>
+          <button id="resetTimer" class="secondary">Reset</button>
+        </div>
+        <p class="muted small">Finishing a focus session adds 25 minutes to your study total.</p>
+      </article>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
