@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ORION GitHub AI Analyst</title>
+<style>
+:root{--bg:#071018;--panel:#10151f;--text:#f3f5fb;--muted:#8e9aac;--line:#202a39;--accent:#8ef0d0;--warn:#ffd166;--danger:#ff7b8a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 75% 10%,#152236 0,transparent 32%),var(--bg);color:var(--text);font:15px Inter,system-ui,sans-serif}
+main{max-width:1100px;margin:auto;padding:30px 18px 60px}.top{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:22px}
+h1{font-size:36px;margin:6px 0}.muted{color:var(--muted)}button{border:0;border-radius:10px;padding:11px 14px;background:var(--accent);color:#07100e;font-weight:800;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.card,.report{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}.card strong{display:block;font-size:27px;margin-top:5px}.label{font-size:10px;letter-spacing:.14em;color:var(--accent);font-weight:800}
+.report{margin-top:14px}.report h2{margin:5px 0 8px}.score{font-size:42px;font-weight:900}.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}.item{padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}
+a{color:var(--accent)}ul{margin:8px 0 0;padding-left:20px}li{margin:7px 0}.status{display:inline-block;padding:5px 8px;border-radius:999px;background:#0b1718;color:var(--accent);font-size:11px;font-weight:800}
+pre{white-space:pre-wrap;word-break:break-word;color:var(--muted)}@media(max-width:760px){.grid{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}.top{align-items:start;flex-direction:column}}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><div><div class="label">ORION / GITHUB INTELLIGENCE</div><h1>AI Engineering Analyst</h1><div id="repoLine" class="muted">Loading public repository signals…</div></div><button id="refresh">Refresh analysis</button></div>
+<div class="grid">
+<div class="card"><div class="label">COMMITS</div><strong id="commits">—</strong><span class="muted">recent default-branch commits</span></div>
+<div class="card"><div class="label">ISSUES</div><strong id="issues">—</strong><span class="muted">open issues</span></div>
+<div class="card"><div class="label">PULL REQUESTS</div><strong id="prs">—</strong><span class="muted">open PRs</span></div>
+<div class="card"><div class="label">RELEASES</div><strong id="releases">—</strong><span class="muted">published releases</span></div>
+</div>
+<section class="report"><div class="label">HEALTH MODEL</div><div id="score" class="score">—</div><div id="health" class="status">Analyzing</div><p id="summary" class="muted">ORION is comparing repository activity, delivery signals and maintenance risk.</p></section>
+<div class="cols">
+<section class="report"><div class="label">WHAT CHANGED</div><h2>Recent engineering activity</h2><div id="changes">Loading…</div></section>
+<section class="report"><div class="label">RISK RADAR</div><h2>What needs attention</h2><div id="risks">Loading…</div></section>
+</div>
+<section class="report"><div class="label">NEXT MOVES</div><h2>Recommended engineering sequence</h2><div id="next">Loading…</div></section>
+<section class="report"><div class="label">SOURCE TRAIL</div><p class="muted">This page reads only public GitHub repository metadata through GitHub's public REST API. No GitHub token is stored in this page.</p><p><a id="repoLink" href="#" target="_blank" rel="noreferrer">Open repository</a></p></section>
+</main>
+<script>
+const OWNER="Satyajit-432", REPO="life-os-student-dashboard";
+const API=`https://api.github.com/repos/${OWNER}/${REPO}`;
+const $=id=>document.getElementById(id);
+async function get(path){const r=await fetch(API+path,{headers:{"Accept":"application/vnd.github+json"}});if(!r.ok)throw new Error(`GitHub API ${r.status}`);return r.json();}
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function scoreRepo(repo,commits,issues,prs,releases){let score=55;if(commits>=10)score+=20;else if(commits>=5)score+=12;else if(commits>=2)score+=5;if(issues===0)score+=5;else score-=Math.min(15,issues*3);if(prs>0)score+=8;if(releases>0)score+=7;if(repo.archived)score=10;return Math.max(0,Math.min(100,score));}
+function render(d){const{repo,commits,issues,prs,releases}=d;$('repoLine').innerHTML=`${esc(repo.full_name)} · default branch <b>${esc(repo.default_branch)}</b> · <a href="${esc(repo.html_url)}" target="_blank" rel="noreferrer">GitHub</a>`;$('repoLink').href=repo.html_url;$('commits').textContent=commits.length;$('issues').textContent=issues.length;$('prs').textContent=prs.length;$('releases').textContent=releases.length;const score=scoreRepo(repo,commits.length,issues.length,prs.length,releases.length);$('score').textContent=score+"/100";$('health').textContent=score>=80?"HEALTHY":score>=60?"BUILDING":"NEEDS ATTENTION";$('summary').textContent=commits.length>=5?"The repository has clear recent build momentum. The next value is reliability: tests, CI, issue tracking and a release path.":"The repository needs more engineering evidence before it can be called production-ready.";$('changes').innerHTML=commits.slice(0,6).map((c,i)=>`<div class="item"><b>${i+1}. ${esc(c.commit.message.split("\n")[0])}</b><br><span class="muted">${new Date(c.commit.author.date).toLocaleString()}</span></div>`).join("")||"<p class='muted'>No recent commits returned.</p>";const risk=[];if(!releases.length)risk.push("No published release yet. Create a first tagged release after the core flow is tested.");if(!prs.length)risk.push("No pull requests yet. Use a feature branch + PR for the next meaningful change to demonstrate review workflow.");if(!issues.length)risk.push("No tracked issues. Add a few real roadmap/bug issues instead of keeping all planning in code.");if(commits.length<5)risk.push("Recent activity is light; keep shipping small, meaningful improvements.");$('risks').innerHTML=(risk.length?risk:["No major signals detected in the current public snapshot."]).map(x=>`<div class="item">${esc(x)}</div>`).join("");const next=["Add automated tests and a GitHub Actions check so every change gets a repeatable verification step.","Create a feature branch for the next upgrade and open a pull request with a clear engineering summary.","Ship v0.1.0 when the dashboard flow is stable, then use release notes to document what changed.","Connect an AI provider server-side later if you want natural-language code/repository reviews; never place a private API key in browser JavaScript."];$('next').innerHTML=next.map((x,i)=>`<div class="item"><b>${i+1}.</b> ${esc(x)}</div>`).join("");}
+async function load(){$('refresh').disabled=true;$('refresh').textContent="Analyzing…";try{const[repo,commits,issues,prs,releases]=await Promise.all([get(""),get("/commits?per_page=10"),get("/issues?state=open&per_page=30"),get("/pulls?state=open&per_page=30"),get("/releases?per_page=30")]);render({repo,commits,issues:issues.filter(x=>!x.pull_request),prs,releases});}catch(e){$('summary').textContent="Could not reach GitHub right now. Check your connection and try again.";$('health').textContent="OFFLINE";$('changes').innerHTML=`<pre>${esc(e.message)}</pre>`;$('risks').innerHTML="<p class='muted'>Analysis unavailable.</p>";}finally{$('refresh').disabled=false;$('refresh').textContent="Refresh analysis";}}
+$('refresh').onclick=load;load();
+</script>
+</body>
+</html>
